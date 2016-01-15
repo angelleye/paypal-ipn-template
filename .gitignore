@@ -2,3 +2,6 @@ _notes/*
 */_notes
 dwsync.xml
 */dwsync.xml
+.idea
+vendor
+includes/config.php
