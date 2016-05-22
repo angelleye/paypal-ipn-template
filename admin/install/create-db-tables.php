@@ -280,6 +280,7 @@ $sql = "CREATE TABLE IF NOT EXISTS `" . $db_table_prefix . "recurring_payments` 
 		  `payment_status` varchar(25) collate utf8_bin default NULL,
 		  `mc_fee` double default NULL,
 		  `notify_version` varchar(25) collate utf8_bin default NULL,
+		  `payer_email` varchar(130) collate utf8_bin default NULL,
 		  `payer_status` varchar(25) collate utf8_bin default NULL,
 		  `currency_code` varchar(10) collate utf8_bin default NULL,
 		  `verify_sign` varchar(255) collate utf8_bin default NULL,

@@ -6,6 +6,7 @@ $recurring_payment_data['payment_date'] = $payment_date;
 $recurring_payment_data['payment_status'] = $payment_status;
 $recurring_payment_data['mc_fee'] = $mc_fee;
 $recurring_payment_data['notify_version'] = $notify_version;
+$recurring_payment_data['payer_email'] = $payer_email;
 $recurring_payment_data['payer_status'] = $payer_status;
 $recurring_payment_data['currency_code'] = $currency_code;
 $recurring_payment_data['verify_sign'] = $verify_sign;
