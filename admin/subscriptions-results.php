@@ -91,7 +91,7 @@ function GetSQLValueString($theValue, $theType, $theDefinedValue = "", $theNotDe
     $theValue = get_magic_quotes_gpc() ? stripslashes($theValue) : $theValue;
   }
 
-  $theValue = function_exists("mysql_real_escape_string") ? mysql_real_escape_string($theValue) : mysql_escape_string($theValue);
+  $theValue = function_exists("mysqli_real_escape_string") ? ((isset($GLOBALS["___mysqli_ston"]) && is_object($GLOBALS["___mysqli_ston"])) ? mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $theValue) : ((trigger_error("[MySQLConverterToo] Fix the mysql_escape_string() call! This code does not work.", E_USER_ERROR)) ? "" : "")) : ((isset($GLOBALS["___mysqli_ston"]) && is_object($GLOBALS["___mysqli_ston"])) ? mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $theValue) : ((trigger_error("[MySQLConverterToo] Fix the mysql_escape_string() call! This code does not work.", E_USER_ERROR)) ? "" : ""));
 
   switch ($theType) {
     case "text":
@@ -126,18 +126,18 @@ if (isset($_GET['pageNum_WADApaypal_subscriptions'])) {
 }
 $startRow_WADApaypal_subscriptions = $pageNum_WADApaypal_subscriptions * $maxRows_WADApaypal_subscriptions;
 
-mysql_select_db($database_connDB, $connDB);
+((bool)mysqli_query( $connDB, "USE " . $database_connDB));
 $query_WADApaypal_subscriptions = "SELECT id, custom, subscr_id, subscr_date, subscr_effective, period1, period2, period3, amount1, amount2, amount3, mc_amount1, mc_amount2, mc_amount3, recurring, reattempt, retry_at, recur_times, username, password, txn_id, payer_email, residence_country, mc_currency, verify_sign, payer_status, first_name, last_name, receiver_email, payer_id, notify_version, item_name, item_number, ipn_status, creation_timestamp, txn_type, test_ipn FROM " . $db_table_prefix . "subscriptions ORDER BY id DESC";
 setQueryBuilderSource($query_WADApaypal_subscriptions,$WADbSearch1,false);
 $query_limit_WADApaypal_subscriptions = sprintf("%s LIMIT %d, %d", $query_WADApaypal_subscriptions, $startRow_WADApaypal_subscriptions, $maxRows_WADApaypal_subscriptions);
-$WADApaypal_subscriptions = mysql_query($query_limit_WADApaypal_subscriptions, $connDB) or die(mysql_error());
-$row_WADApaypal_subscriptions = mysql_fetch_assoc($WADApaypal_subscriptions);
+$WADApaypal_subscriptions = mysqli_query( $connDB, $query_limit_WADApaypal_subscriptions) or die(((is_object($GLOBALS["___mysqli_ston"])) ? mysqli_error($GLOBALS["___mysqli_ston"]) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
+$row_WADApaypal_subscriptions = mysqli_fetch_assoc($WADApaypal_subscriptions);
 
 if (isset($_GET['totalRows_WADApaypal_subscriptions'])) {
   $totalRows_WADApaypal_subscriptions = $_GET['totalRows_WADApaypal_subscriptions'];
 } else {
-  $all_WADApaypal_subscriptions = mysql_query($query_WADApaypal_subscriptions);
-  $totalRows_WADApaypal_subscriptions = mysql_num_rows($all_WADApaypal_subscriptions);
+  $all_WADApaypal_subscriptions = mysqli_query($GLOBALS["___mysqli_ston"], $query_WADApaypal_subscriptions);
+  $totalRows_WADApaypal_subscriptions = mysqli_num_rows($all_WADApaypal_subscriptions);
 }
 $totalPages_WADApaypal_subscriptions = ceil($totalRows_WADApaypal_subscriptions/$maxRows_WADApaypal_subscriptions)-1;
 ?>
@@ -337,7 +337,7 @@ $WARRT_AltClass1 = new WA_AltClassIterator(explode("|", "WADAResultsRowDark|"));
                 </tr>
             </table></td>
           </tr>
-          <?php } while ($row_WADApaypal_subscriptions = mysql_fetch_assoc($WADApaypal_subscriptions)); ?>
+          <?php } while ($row_WADApaypal_subscriptions = mysqli_fetch_assoc($WADApaypal_subscriptions)); ?>
         </table>
         <div class="WADAResultsNavigation">
           <div class="WADAResultsCount">Records <?php echo ($startRow_WADApaypal_subscriptions + 1) ?> to <?php echo min($startRow_WADApaypal_subscriptions + $maxRows_WADApaypal_subscriptions, $totalRows_WADApaypal_subscriptions) ?> of <?php echo $totalRows_WADApaypal_subscriptions ?> </div>
@@ -377,5 +377,5 @@ $WARRT_AltClass1 = new WA_AltClassIterator(explode("|", "WADAResultsRowDark|"));
 </body>
 </html>
 <?php
-mysql_free_result($WADApaypal_subscriptions);
+((mysqli_free_result($WADApaypal_subscriptions) || (is_object($WADApaypal_subscriptions) && (get_class($WADApaypal_subscriptions) == "mysqli_result"))) ? true : false);
 ?>

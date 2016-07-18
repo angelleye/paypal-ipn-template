@@ -84,7 +84,7 @@ function GetSQLValueString($theValue, $theType, $theDefinedValue = "", $theNotDe
     $theValue = get_magic_quotes_gpc() ? stripslashes($theValue) : $theValue;
   }
 
-  $theValue = function_exists("mysql_real_escape_string") ? mysql_real_escape_string($theValue) : mysql_escape_string($theValue);
+  $theValue = function_exists("mysqli_real_escape_string") ? ((isset($GLOBALS["___mysqli_ston"]) && is_object($GLOBALS["___mysqli_ston"])) ? mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $theValue) : ((trigger_error("[MySQLConverterToo] Fix the mysql_escape_string() call! This code does not work.", E_USER_ERROR)) ? "" : "")) : ((isset($GLOBALS["___mysqli_ston"]) && is_object($GLOBALS["___mysqli_ston"])) ? mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $theValue) : ((trigger_error("[MySQLConverterToo] Fix the mysql_escape_string() call! This code does not work.", E_USER_ERROR)) ? "" : ""));
 
   switch ($theType) {
     case "text":
@@ -119,18 +119,18 @@ if (isset($_GET['pageNum_WADApaypal_recurring_payment_profiles'])) {
 }
 $startRow_WADApaypal_recurring_payment_profiles = $pageNum_WADApaypal_recurring_payment_profiles * $maxRows_WADApaypal_recurring_payment_profiles;
 
-mysql_select_db($database_connDB, $connDB);
+((bool)mysqli_query( $connDB, "USE " . $database_connDB));
 $query_WADApaypal_recurring_payment_profiles = "SELECT id, payment_cycle, txn_type, last_name, first_name, next_payment_date, residence_country, initial_payment_amount, rp_invoice_id, currency_code, time_created, verify_sign, period_type, payer_status, payer_email, receiver_email, payer_id, product_type, payer_business_name, shipping, amount_per_cycle, profile_status, notify_version, amount, outstanding_balance, recurring_payment_id, product_name, ipn_status, creation_timestamp, test_ipn FROM " . $db_table_prefix . "recurring_payment_profiles ORDER BY id DESC";
 setQueryBuilderSource($query_WADApaypal_recurring_payment_profiles,$WADbSearch1,false);
 $query_limit_WADApaypal_recurring_payment_profiles = sprintf("%s LIMIT %d, %d", $query_WADApaypal_recurring_payment_profiles, $startRow_WADApaypal_recurring_payment_profiles, $maxRows_WADApaypal_recurring_payment_profiles);
-$WADApaypal_recurring_payment_profiles = mysql_query($query_limit_WADApaypal_recurring_payment_profiles, $connDB) or die(mysql_error());
-$row_WADApaypal_recurring_payment_profiles = mysql_fetch_assoc($WADApaypal_recurring_payment_profiles);
+$WADApaypal_recurring_payment_profiles = mysqli_query( $connDB, $query_limit_WADApaypal_recurring_payment_profiles) or die(((is_object($GLOBALS["___mysqli_ston"])) ? mysqli_error($GLOBALS["___mysqli_ston"]) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
+$row_WADApaypal_recurring_payment_profiles = mysqli_fetch_assoc($WADApaypal_recurring_payment_profiles);
 
 if (isset($_GET['totalRows_WADApaypal_recurring_payment_profiles'])) {
   $totalRows_WADApaypal_recurring_payment_profiles = $_GET['totalRows_WADApaypal_recurring_payment_profiles'];
 } else {
-  $all_WADApaypal_recurring_payment_profiles = mysql_query($query_WADApaypal_recurring_payment_profiles);
-  $totalRows_WADApaypal_recurring_payment_profiles = mysql_num_rows($all_WADApaypal_recurring_payment_profiles);
+  $all_WADApaypal_recurring_payment_profiles = mysqli_query($GLOBALS["___mysqli_ston"], $query_WADApaypal_recurring_payment_profiles);
+  $totalRows_WADApaypal_recurring_payment_profiles = mysqli_num_rows($all_WADApaypal_recurring_payment_profiles);
 }
 $totalPages_WADApaypal_recurring_payment_profiles = ceil($totalRows_WADApaypal_recurring_payment_profiles/$maxRows_WADApaypal_recurring_payment_profiles)-1;
 ?>
@@ -340,7 +340,7 @@ $WARRT_AltClass1 = new WA_AltClassIterator(explode("|", "WADAResultsRowDark|"));
                 </tr>
             </table></td>
           </tr>
-          <?php } while ($row_WADApaypal_recurring_payment_profiles = mysql_fetch_assoc($WADApaypal_recurring_payment_profiles)); ?>
+          <?php } while ($row_WADApaypal_recurring_payment_profiles = mysqli_fetch_assoc($WADApaypal_recurring_payment_profiles)); ?>
         </table>
         <div class="WADAResultsNavigation">
           <div class="WADAResultsCount">Records <?php echo ($startRow_WADApaypal_recurring_payment_profiles + 1) ?> to <?php echo min($startRow_WADApaypal_recurring_payment_profiles + $maxRows_WADApaypal_recurring_payment_profiles, $totalRows_WADApaypal_recurring_payment_profiles) ?> of <?php echo $totalRows_WADApaypal_recurring_payment_profiles ?> </div>
@@ -380,5 +380,5 @@ $WARRT_AltClass1 = new WA_AltClassIterator(explode("|", "WADAResultsRowDark|"));
 </body>
 </html>
 <?php
-mysql_free_result($WADApaypal_recurring_payment_profiles);
+((mysqli_free_result($WADApaypal_recurring_payment_profiles) || (is_object($WADApaypal_recurring_payment_profiles) && (get_class($WADApaypal_recurring_payment_profiles) == "mysqli_result"))) ? true : false);
 ?>

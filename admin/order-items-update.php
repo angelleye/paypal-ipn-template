@@ -8,7 +8,7 @@ function GetSQLValueString($theValue, $theType, $theDefinedValue = "", $theNotDe
     $theValue = get_magic_quotes_gpc() ? stripslashes($theValue) : $theValue;
   }
 
-  $theValue = function_exists("mysql_real_escape_string") ? mysql_real_escape_string($theValue) : mysql_escape_string($theValue);
+  $theValue = function_exists("mysqli_real_escape_string") ? ((isset($GLOBALS["___mysqli_ston"]) && is_object($GLOBALS["___mysqli_ston"])) ? mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $theValue) : ((trigger_error("[MySQLConverterToo] Fix the mysql_escape_string() call! This code does not work.", E_USER_ERROR)) ? "" : "")) : ((isset($GLOBALS["___mysqli_ston"]) && is_object($GLOBALS["___mysqli_ston"])) ? mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $theValue) : ((trigger_error("[MySQLConverterToo] Fix the mysql_escape_string() call! This code does not work.", E_USER_ERROR)) ? "" : ""));
 
   switch ($theType) {
     case "text":
@@ -37,11 +37,11 @@ $Paramid_WADApaypal_order_items = "-1";
 if (isset($_GET['id'])) {
   $Paramid_WADApaypal_order_items = (get_magic_quotes_gpc()) ? $_GET['id'] : addslashes($_GET['id']);
 }
-mysql_select_db($database_connDB, $connDB);
+((bool)mysqli_query( $connDB, "USE " . $database_connDB));
 $query_WADApaypal_order_items = sprintf("SELECT id, order_id, refund_id, subscr_id, item_name, item_number, os0, on0, os1, on1, quantity, custom, mc_gross, mc_handling, mc_shipping, creation_timestamp, raw_log_id FROM " . $db_table_prefix . "order_items WHERE id = %s", GetSQLValueString($Paramid_WADApaypal_order_items, "int"));
-$WADApaypal_order_items = mysql_query($query_WADApaypal_order_items, $connDB) or die(mysql_error());
-$row_WADApaypal_order_items = mysql_fetch_assoc($WADApaypal_order_items);
-$totalRows_WADApaypal_order_items = mysql_num_rows($WADApaypal_order_items);?>
+$WADApaypal_order_items = mysqli_query( $connDB, $query_WADApaypal_order_items) or die(((is_object($GLOBALS["___mysqli_ston"])) ? mysqli_error($GLOBALS["___mysqli_ston"]) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
+$row_WADApaypal_order_items = mysqli_fetch_assoc($WADApaypal_order_items);
+$totalRows_WADApaypal_order_items = mysqli_num_rows($WADApaypal_order_items);?>
 <?php 
 // WA Application Builder Update
 if (isset($_POST["Update_x"])) // Trigger
@@ -68,12 +68,12 @@ if (isset($_POST["Update_x"])) // Trigger
   $WA_where_comparisons = explode("|", $WA_where_comparisonStr);
   
   $WA_connectionDB = $database_connDB;
-  mysql_select_db($WA_connectionDB, $WA_connection);
+  ((bool)mysqli_query( $WA_connection, "USE " . $WA_connectionDB));
   if (!session_id()) session_start();
   $updateParamsObj = WA_AB_generateInsertParams($WA_fieldNames, $WA_columns, $WA_fieldValues, -1);
   $WhereObj = WA_AB_generateWhereClause($WA_where_fieldNames, $WA_where_columns, $WA_where_fieldValues,  $WA_where_comparisons );
   $WA_Sql = "UPDATE `" . $WA_table . "` SET " . $updateParamsObj->WA_setValues . " WHERE " . $WhereObj->sqlWhereClause . "";
-  $MM_editCmd = mysql_query($WA_Sql, $WA_connection) or die(mysql_error());
+  $MM_editCmd = mysqli_query( $WA_connection, $WA_Sql) or die(((is_object($GLOBALS["___mysqli_ston"])) ? mysqli_error($GLOBALS["___mysqli_ston"]) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
   if ($WA_redirectURL != "")  {
     if ($WA_keepQueryString && $WA_redirectURL != "" && isset($_SERVER["QUERY_STRING"]) && $_SERVER["QUERY_STRING"] !== "" && sizeof($_POST) > 0) {
       $WA_redirectURL .= ((strpos($WA_redirectURL, '?') === false)?"?":"&").$_SERVER["QUERY_STRING"];
@@ -200,5 +200,5 @@ if (isset($_POST["Update_x"])) // Trigger
 </body>
 </html>
 <?php
-mysql_free_result($WADApaypal_order_items);
+((mysqli_free_result($WADApaypal_order_items) || (is_object($WADApaypal_order_items) && (get_class($WADApaypal_order_items) == "mysqli_result"))) ? true : false);
 ?>

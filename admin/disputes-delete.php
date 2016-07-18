@@ -8,7 +8,7 @@ function GetSQLValueString($theValue, $theType, $theDefinedValue = "", $theNotDe
     $theValue = get_magic_quotes_gpc() ? stripslashes($theValue) : $theValue;
   }
 
-  $theValue = function_exists("mysql_real_escape_string") ? mysql_real_escape_string($theValue) : mysql_escape_string($theValue);
+  $theValue = function_exists("mysqli_real_escape_string") ? ((isset($GLOBALS["___mysqli_ston"]) && is_object($GLOBALS["___mysqli_ston"])) ? mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $theValue) : ((trigger_error("[MySQLConverterToo] Fix the mysql_escape_string() call! This code does not work.", E_USER_ERROR)) ? "" : "")) : ((isset($GLOBALS["___mysqli_ston"]) && is_object($GLOBALS["___mysqli_ston"])) ? mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $theValue) : ((trigger_error("[MySQLConverterToo] Fix the mysql_escape_string() call! This code does not work.", E_USER_ERROR)) ? "" : ""));
 
   switch ($theType) {
     case "text":
@@ -37,11 +37,11 @@ $Paramid_WADApaypal_disputes = "-1";
 if (isset($_GET['id'])) {
   $Paramid_WADApaypal_disputes = (get_magic_quotes_gpc()) ? $_GET['id'] : addslashes($_GET['id']);
 }
-mysql_select_db($database_connDB, $connDB);
+((bool)mysqli_query( $connDB, "USE " . $database_connDB));
 $query_WADApaypal_disputes = sprintf("SELECT id, txn_id, case_id, case_type, case_creation_date, payment_date, receipt_id, verify_sign, payer_email, payer_id, invoice, reason_code, custom, notify_version, creation_timestamp, ipn_status, txn_type, test_ipn FROM " . $db_table_prefix . "disputes WHERE id = %s", GetSQLValueString($Paramid_WADApaypal_disputes, "int"));
-$WADApaypal_disputes = mysql_query($query_WADApaypal_disputes, $connDB) or die(mysql_error());
-$row_WADApaypal_disputes = mysql_fetch_assoc($WADApaypal_disputes);
-$totalRows_WADApaypal_disputes = mysql_num_rows($WADApaypal_disputes);?>
+$WADApaypal_disputes = mysqli_query( $connDB, $query_WADApaypal_disputes) or die(((is_object($GLOBALS["___mysqli_ston"])) ? mysqli_error($GLOBALS["___mysqli_ston"]) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
+$row_WADApaypal_disputes = mysqli_fetch_assoc($WADApaypal_disputes);
+$totalRows_WADApaypal_disputes = mysqli_num_rows($WADApaypal_disputes);?>
 <?php 
 // WA Application Builder Delete
 if (isset($_POST["Delete_x"])) // Trigger
@@ -59,11 +59,11 @@ if (isset($_POST["Delete_x"])) // Trigger
   $WA_columns = explode("|", $WA_columnTypesStr);
   $WA_comparisions = explode("|", $WA_comparisonStr);
   $WA_connectionDB = $database_connDB;
-  mysql_select_db($WA_connectionDB, $WA_connection);
+  ((bool)mysqli_query( $WA_connection, "USE " . $WA_connectionDB));
   if (!session_id()) session_start();
   $deleteParamsObj = WA_AB_generateWhereClause($WA_fieldNames, $WA_columns, $WA_fieldValues, $WA_comparisions);
   $WA_Sql = "DELETE FROM `" . $WA_table . "` WHERE " . $deleteParamsObj->sqlWhereClause;
-  $MM_editCmd = mysql_query($WA_Sql, $WA_connection) or die(mysql_error());
+  $MM_editCmd = mysqli_query( $WA_connection, $WA_Sql) or die(((is_object($GLOBALS["___mysqli_ston"])) ? mysqli_error($GLOBALS["___mysqli_ston"]) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
   if ($WA_redirectURL != "")  {
     if ($WA_keepQueryString && $WA_redirectURL != "" && isset($_SERVER["QUERY_STRING"]) && $_SERVER["QUERY_STRING"] !== "" && sizeof($_POST) > 0) {
       $WA_redirectURL .= ((strpos($WA_redirectURL, '?') === false)?"?":"&").$_SERVER["QUERY_STRING"];
@@ -264,5 +264,5 @@ if (isset($_POST["Delete_x"])) // Trigger
 </body>
 </html>
 <?php
-mysql_free_result($WADApaypal_disputes);
+((mysqli_free_result($WADApaypal_disputes) || (is_object($WADApaypal_disputes) && (get_class($WADApaypal_disputes) == "mysqli_result"))) ? true : false);
 ?>

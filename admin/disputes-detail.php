@@ -7,7 +7,7 @@ function GetSQLValueString($theValue, $theType, $theDefinedValue = "", $theNotDe
     $theValue = get_magic_quotes_gpc() ? stripslashes($theValue) : $theValue;
   }
 
-  $theValue = function_exists("mysql_real_escape_string") ? mysql_real_escape_string($theValue) : mysql_escape_string($theValue);
+  $theValue = function_exists("mysqli_real_escape_string") ? ((isset($GLOBALS["___mysqli_ston"]) && is_object($GLOBALS["___mysqli_ston"])) ? mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $theValue) : ((trigger_error("[MySQLConverterToo] Fix the mysql_escape_string() call! This code does not work.", E_USER_ERROR)) ? "" : "")) : ((isset($GLOBALS["___mysqli_ston"]) && is_object($GLOBALS["___mysqli_ston"])) ? mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $theValue) : ((trigger_error("[MySQLConverterToo] Fix the mysql_escape_string() call! This code does not work.", E_USER_ERROR)) ? "" : ""));
 
   switch ($theType) {
     case "text":
@@ -47,11 +47,11 @@ $Paramid2_WADApaypal_disputes = "-1";
 if (isset($_GET['id'])) {
   $Paramid2_WADApaypal_disputes = (get_magic_quotes_gpc()) ? $_GET['id'] : addslashes($_GET['id']);
 }
-mysql_select_db($database_connDB, $connDB);
+((bool)mysqli_query( $connDB, "USE " . $database_connDB));
 $query_WADApaypal_disputes = sprintf("SELECT id, txn_id, case_id, case_type, case_creation_date, payment_date, receipt_id, verify_sign, payer_email, payer_id, invoice, reason_code, custom, notify_version, creation_timestamp, ipn_status, txn_type, test_ipn FROM " . $db_table_prefix . "disputes WHERE id = %s OR ( -1= %s AND id= %s)", GetSQLValueString($Paramid_WADApaypal_disputes, "int"),GetSQLValueString($Paramid2_WADApaypal_disputes, "int"),GetSQLValueString($ParamSessionid_WADApaypal_disputes, "int"));
-$WADApaypal_disputes = mysql_query($query_WADApaypal_disputes, $connDB) or die(mysql_error());
-$row_WADApaypal_disputes = mysql_fetch_assoc($WADApaypal_disputes);
-$totalRows_WADApaypal_disputes = mysql_num_rows($WADApaypal_disputes);
+$WADApaypal_disputes = mysqli_query( $connDB, $query_WADApaypal_disputes) or die(((is_object($GLOBALS["___mysqli_ston"])) ? mysqli_error($GLOBALS["___mysqli_ston"]) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
+$row_WADApaypal_disputes = mysqli_fetch_assoc($WADApaypal_disputes);
+$totalRows_WADApaypal_disputes = mysqli_num_rows($WADApaypal_disputes);
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -273,5 +273,5 @@ $totalRows_WADApaypal_disputes = mysql_num_rows($WADApaypal_disputes);
 </body>
 </html>
 <?php
-mysql_free_result($WADApaypal_disputes);
+((mysqli_free_result($WADApaypal_disputes) || (is_object($WADApaypal_disputes) && (get_class($WADApaypal_disputes) == "mysqli_result"))) ? true : false);
 ?>

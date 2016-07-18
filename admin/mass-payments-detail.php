@@ -7,7 +7,7 @@ function GetSQLValueString($theValue, $theType, $theDefinedValue = "", $theNotDe
     $theValue = get_magic_quotes_gpc() ? stripslashes($theValue) : $theValue;
   }
 
-  $theValue = function_exists("mysql_real_escape_string") ? mysql_real_escape_string($theValue) : mysql_escape_string($theValue);
+  $theValue = function_exists("mysqli_real_escape_string") ? ((isset($GLOBALS["___mysqli_ston"]) && is_object($GLOBALS["___mysqli_ston"])) ? mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $theValue) : ((trigger_error("[MySQLConverterToo] Fix the mysql_escape_string() call! This code does not work.", E_USER_ERROR)) ? "" : "")) : ((isset($GLOBALS["___mysqli_ston"]) && is_object($GLOBALS["___mysqli_ston"])) ? mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $theValue) : ((trigger_error("[MySQLConverterToo] Fix the mysql_escape_string() call! This code does not work.", E_USER_ERROR)) ? "" : ""));
 
   switch ($theType) {
     case "text":
@@ -47,11 +47,11 @@ $Paramid2_WADApaypal_mass_payments = "-1";
 if (isset($_GET['id'])) {
   $Paramid2_WADApaypal_mass_payments = (get_magic_quotes_gpc()) ? $_GET['id'] : addslashes($_GET['id']);
 }
-mysql_select_db($database_connDB, $connDB);
+((bool)mysqli_query( $connDB, "USE " . $database_connDB));
 $query_WADApaypal_mass_payments = sprintf("SELECT id, masspay_txn_id, mc_currency, mc_fee, mc_gross, receiver_email, status, unique_id, creation_timestamp, ipn_status, txn_type, test_ipn FROM " . $db_table_prefix . "mass_payments WHERE id = %s OR ( -1= %s AND id= %s)", GetSQLValueString($Paramid_WADApaypal_mass_payments, "int"),GetSQLValueString($Paramid2_WADApaypal_mass_payments, "int"),GetSQLValueString($ParamSessionid_WADApaypal_mass_payments, "int"));
-$WADApaypal_mass_payments = mysql_query($query_WADApaypal_mass_payments, $connDB) or die(mysql_error());
-$row_WADApaypal_mass_payments = mysql_fetch_assoc($WADApaypal_mass_payments);
-$totalRows_WADApaypal_mass_payments = mysql_num_rows($WADApaypal_mass_payments);
+$WADApaypal_mass_payments = mysqli_query( $connDB, $query_WADApaypal_mass_payments) or die(((is_object($GLOBALS["___mysqli_ston"])) ? mysqli_error($GLOBALS["___mysqli_ston"]) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
+$row_WADApaypal_mass_payments = mysqli_fetch_assoc($WADApaypal_mass_payments);
+$totalRows_WADApaypal_mass_payments = mysqli_num_rows($WADApaypal_mass_payments);
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -214,5 +214,5 @@ $totalRows_WADApaypal_mass_payments = mysql_num_rows($WADApaypal_mass_payments);
 </body>
 </html>
 <?php
-mysql_free_result($WADApaypal_mass_payments);
+((mysqli_free_result($WADApaypal_mass_payments) || (is_object($WADApaypal_mass_payments) && (get_class($WADApaypal_mass_payments) == "mysqli_result"))) ? true : false);
 ?>

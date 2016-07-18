@@ -70,7 +70,7 @@ function GetSQLValueString($theValue, $theType, $theDefinedValue = "", $theNotDe
     $theValue = get_magic_quotes_gpc() ? stripslashes($theValue) : $theValue;
   }
 
-  $theValue = function_exists("mysql_real_escape_string") ? mysql_real_escape_string($theValue) : mysql_escape_string($theValue);
+  $theValue = function_exists("mysqli_real_escape_string") ? ((isset($GLOBALS["___mysqli_ston"]) && is_object($GLOBALS["___mysqli_ston"])) ? mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $theValue) : ((trigger_error("[MySQLConverterToo] Fix the mysql_escape_string() call! This code does not work.", E_USER_ERROR)) ? "" : "")) : ((isset($GLOBALS["___mysqli_ston"]) && is_object($GLOBALS["___mysqli_ston"])) ? mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $theValue) : ((trigger_error("[MySQLConverterToo] Fix the mysql_escape_string() call! This code does not work.", E_USER_ERROR)) ? "" : ""));
 
   switch ($theType) {
     case "text":
@@ -105,18 +105,18 @@ if (isset($_GET['pageNum_WADApaypal_order_items'])) {
 }
 $startRow_WADApaypal_order_items = $pageNum_WADApaypal_order_items * $maxRows_WADApaypal_order_items;
 
-mysql_select_db($database_connDB, $connDB);
+((bool)mysqli_query( $connDB, "USE " . $database_connDB));
 $query_WADApaypal_order_items = "SELECT id, order_id, refund_id, item_name, item_number, os0, on0, os1, on1, quantity, custom, mc_gross, mc_handling, mc_shipping, creation_timestamp, raw_log_id FROM " . $db_table_prefix . "order_items ORDER BY id DESC";
 setQueryBuilderSource($query_WADApaypal_order_items,$WADbSearch1,false);
 $query_limit_WADApaypal_order_items = sprintf("%s LIMIT %d, %d", $query_WADApaypal_order_items, $startRow_WADApaypal_order_items, $maxRows_WADApaypal_order_items);
-$WADApaypal_order_items = mysql_query($query_limit_WADApaypal_order_items, $connDB) or die(mysql_error());
-$row_WADApaypal_order_items = mysql_fetch_assoc($WADApaypal_order_items);
+$WADApaypal_order_items = mysqli_query( $connDB, $query_limit_WADApaypal_order_items) or die(((is_object($GLOBALS["___mysqli_ston"])) ? mysqli_error($GLOBALS["___mysqli_ston"]) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
+$row_WADApaypal_order_items = mysqli_fetch_assoc($WADApaypal_order_items);
 
 if (isset($_GET['totalRows_WADApaypal_order_items'])) {
   $totalRows_WADApaypal_order_items = $_GET['totalRows_WADApaypal_order_items'];
 } else {
-  $all_WADApaypal_order_items = mysql_query($query_WADApaypal_order_items);
-  $totalRows_WADApaypal_order_items = mysql_num_rows($all_WADApaypal_order_items);
+  $all_WADApaypal_order_items = mysqli_query($GLOBALS["___mysqli_ston"], $query_WADApaypal_order_items);
+  $totalRows_WADApaypal_order_items = mysqli_num_rows($all_WADApaypal_order_items);
 }
 $totalPages_WADApaypal_order_items = ceil($totalRows_WADApaypal_order_items/$maxRows_WADApaypal_order_items)-1;
 ?>
@@ -306,7 +306,7 @@ $WARRT_AltClass1 = new WA_AltClassIterator(explode("|", "WADAResultsRowDark|"));
                 </tr>
             </table></td>
           </tr>
-          <?php } while ($row_WADApaypal_order_items = mysql_fetch_assoc($WADApaypal_order_items)); ?>
+          <?php } while ($row_WADApaypal_order_items = mysqli_fetch_assoc($WADApaypal_order_items)); ?>
         </table>
         <div class="WADAResultsNavigation">
           <div class="WADAResultsCount">Records <?php echo ($startRow_WADApaypal_order_items + 1) ?> to <?php echo min($startRow_WADApaypal_order_items + $maxRows_WADApaypal_order_items, $totalRows_WADApaypal_order_items) ?> of <?php echo $totalRows_WADApaypal_order_items ?> </div>
@@ -346,5 +346,5 @@ $WARRT_AltClass1 = new WA_AltClassIterator(explode("|", "WADAResultsRowDark|"));
 </body>
 </html>
 <?php
-mysql_free_result($WADApaypal_order_items);
+((mysqli_free_result($WADApaypal_order_items) || (is_object($WADApaypal_order_items) && (get_class($WADApaypal_order_items) == "mysqli_result"))) ? true : false);
 ?>

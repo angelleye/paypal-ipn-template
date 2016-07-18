@@ -8,7 +8,7 @@ function GetSQLValueString($theValue, $theType, $theDefinedValue = "", $theNotDe
     $theValue = get_magic_quotes_gpc() ? stripslashes($theValue) : $theValue;
   }
 
-  $theValue = function_exists("mysql_real_escape_string") ? mysql_real_escape_string($theValue) : mysql_escape_string($theValue);
+  $theValue = function_exists("mysqli_real_escape_string") ? ((isset($GLOBALS["___mysqli_ston"]) && is_object($GLOBALS["___mysqli_ston"])) ? mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $theValue) : ((trigger_error("[MySQLConverterToo] Fix the mysql_escape_string() call! This code does not work.", E_USER_ERROR)) ? "" : "")) : ((isset($GLOBALS["___mysqli_ston"]) && is_object($GLOBALS["___mysqli_ston"])) ? mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $theValue) : ((trigger_error("[MySQLConverterToo] Fix the mysql_escape_string() call! This code does not work.", E_USER_ERROR)) ? "" : ""));
 
   switch ($theType) {
     case "text":
@@ -37,11 +37,11 @@ $Paramid_WADApaypal_subscription_payments = "-1";
 if (isset($_GET['id'])) {
   $Paramid_WADApaypal_subscription_payments = (get_magic_quotes_gpc()) ? $_GET['id'] : addslashes($_GET['id']);
 }
-mysql_select_db($database_connDB, $connDB);
+((bool)mysqli_query( $connDB, "USE " . $database_connDB));
 $query_WADApaypal_subscription_payments = sprintf("SELECT id, first_name, last_name, payer_email, memo, item_name, item_number, os0, on0, os1, on1, quantity, payment_date, payment_type, txn_id, mc_gross, mc_fee, payment_status, pending_reason, txn_type, tax, mc_currency, reason_code, custom, address_country, subscr_id, payer_status, ipn_status, creation_timestamp, test_ipn FROM " . $db_table_prefix . "subscription_payments WHERE id = %s", GetSQLValueString($Paramid_WADApaypal_subscription_payments, "int"));
-$WADApaypal_subscription_payments = mysql_query($query_WADApaypal_subscription_payments, $connDB) or die(mysql_error());
-$row_WADApaypal_subscription_payments = mysql_fetch_assoc($WADApaypal_subscription_payments);
-$totalRows_WADApaypal_subscription_payments = mysql_num_rows($WADApaypal_subscription_payments);?>
+$WADApaypal_subscription_payments = mysqli_query( $connDB, $query_WADApaypal_subscription_payments) or die(((is_object($GLOBALS["___mysqli_ston"])) ? mysqli_error($GLOBALS["___mysqli_ston"]) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
+$row_WADApaypal_subscription_payments = mysqli_fetch_assoc($WADApaypal_subscription_payments);
+$totalRows_WADApaypal_subscription_payments = mysqli_num_rows($WADApaypal_subscription_payments);?>
 <?php 
 // WA Application Builder Delete
 if (isset($_POST["Delete_x"])) // Trigger
@@ -59,11 +59,11 @@ if (isset($_POST["Delete_x"])) // Trigger
   $WA_columns = explode("|", $WA_columnTypesStr);
   $WA_comparisions = explode("|", $WA_comparisonStr);
   $WA_connectionDB = $database_connDB;
-  mysql_select_db($WA_connectionDB, $WA_connection);
+  ((bool)mysqli_query( $WA_connection, "USE " . $WA_connectionDB));
   if (!session_id()) session_start();
   $deleteParamsObj = WA_AB_generateWhereClause($WA_fieldNames, $WA_columns, $WA_fieldValues, $WA_comparisions);
   $WA_Sql = "DELETE FROM `" . $WA_table . "` WHERE " . $deleteParamsObj->sqlWhereClause;
-  $MM_editCmd = mysql_query($WA_Sql, $WA_connection) or die(mysql_error());
+  $MM_editCmd = mysqli_query( $WA_connection, $WA_Sql) or die(((is_object($GLOBALS["___mysqli_ston"])) ? mysqli_error($GLOBALS["___mysqli_ston"]) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
   if ($WA_redirectURL != "")  {
     if ($WA_keepQueryString && $WA_redirectURL != "" && isset($_SERVER["QUERY_STRING"]) && $_SERVER["QUERY_STRING"] !== "" && sizeof($_POST) > 0) {
       $WA_redirectURL .= ((strpos($WA_redirectURL, '?') === false)?"?":"&").$_SERVER["QUERY_STRING"];
@@ -243,5 +243,5 @@ if (isset($_POST["Delete_x"])) // Trigger
 </body>
 </html>
 <?php
-mysql_free_result($WADApaypal_subscription_payments);
+((mysqli_free_result($WADApaypal_subscription_payments) || (is_object($WADApaypal_subscription_payments) && (get_class($WADApaypal_subscription_payments) == "mysqli_result"))) ? true : false);
 ?>

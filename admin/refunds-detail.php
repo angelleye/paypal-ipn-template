@@ -7,7 +7,7 @@ function GetSQLValueString($theValue, $theType, $theDefinedValue = "", $theNotDe
     $theValue = get_magic_quotes_gpc() ? stripslashes($theValue) : $theValue;
   }
 
-  $theValue = function_exists("mysql_real_escape_string") ? mysql_real_escape_string($theValue) : mysql_escape_string($theValue);
+  $theValue = function_exists("mysqli_real_escape_string") ? ((isset($GLOBALS["___mysqli_ston"]) && is_object($GLOBALS["___mysqli_ston"])) ? mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $theValue) : ((trigger_error("[MySQLConverterToo] Fix the mysql_escape_string() call! This code does not work.", E_USER_ERROR)) ? "" : "")) : ((isset($GLOBALS["___mysqli_ston"]) && is_object($GLOBALS["___mysqli_ston"])) ? mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $theValue) : ((trigger_error("[MySQLConverterToo] Fix the mysql_escape_string() call! This code does not work.", E_USER_ERROR)) ? "" : ""));
 
   switch ($theType) {
     case "text":
@@ -47,21 +47,21 @@ $Paramid2_WADApaypal_refunds = "-1";
 if (isset($_GET['id'])) {
   $Paramid2_WADApaypal_refunds = (get_magic_quotes_gpc()) ? $_GET['id'] : addslashes($_GET['id']);
 }
-mysql_select_db($database_connDB, $connDB);
+((bool)mysqli_query( $connDB, "USE " . $database_connDB));
 $query_WADApaypal_refunds = sprintf("SELECT id, ipn_status, mc_gross, invoice, protection_eligibility, payer_id, address_street, payment_date, payment_status, charset, address_zip, mc_shipping, mc_handling, first_name, memo, last_name, product_name, mc_fee, address_country_code, address_name, notify_version, reason_code, custom, address_country, address_city, verify_sign, payer_email, parent_txn_id, contact_phone, time_created, txn_id, payment_type, payer_business_name, address_state, receiver_email, receiver_id, mc_currency, residence_country, test_ipn, transaction_subject, rp_invoice_id, recurring_payment_id, creation_timestamp FROM " . $db_table_prefix . "refunds WHERE id = %s OR ( -1= %s AND id= %s)", GetSQLValueString($Paramid_WADApaypal_refunds, "int"),GetSQLValueString($Paramid2_WADApaypal_refunds, "int"),GetSQLValueString($ParamSessionid_WADApaypal_refunds, "int"));
-$WADApaypal_refunds = mysql_query($query_WADApaypal_refunds, $connDB) or die(mysql_error());
-$row_WADApaypal_refunds = mysql_fetch_assoc($WADApaypal_refunds);
-$totalRows_WADApaypal_refunds = mysql_num_rows($WADApaypal_refunds);
+$WADApaypal_refunds = mysqli_query( $connDB, $query_WADApaypal_refunds) or die(((is_object($GLOBALS["___mysqli_ston"])) ? mysqli_error($GLOBALS["___mysqli_ston"]) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
+$row_WADApaypal_refunds = mysqli_fetch_assoc($WADApaypal_refunds);
+$totalRows_WADApaypal_refunds = mysqli_num_rows($WADApaypal_refunds);
 
 $varOrderID_rsOrderItems = "1";
 if (isset($row_WADApaypal_refunds['id'])) {
   $varOrderID_rsOrderItems = (get_magic_quotes_gpc()) ? $row_WADApaypal_refunds['id'] : addslashes($row_WADApaypal_refunds['id']);
 }
-mysql_select_db($database_connDB, $connDB);
+((bool)mysqli_query( $connDB, "USE " . $database_connDB));
 $query_rsOrderItems = sprintf("SELECT * FROM " . $db_table_prefix . "order_items WHERE " . $db_table_prefix . "order_items.order_id = %s", GetSQLValueString($varOrderID_rsOrderItems, "int"));
-$rsOrderItems = mysql_query($query_rsOrderItems, $connDB) or die(mysql_error());
-$row_rsOrderItems = mysql_fetch_assoc($rsOrderItems);
-$totalRows_rsOrderItems = mysql_num_rows($rsOrderItems);
+$rsOrderItems = mysqli_query( $connDB, $query_rsOrderItems) or die(((is_object($GLOBALS["___mysqli_ston"])) ? mysqli_error($GLOBALS["___mysqli_ston"]) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
+$row_rsOrderItems = mysqli_fetch_assoc($rsOrderItems);
+$totalRows_rsOrderItems = mysqli_num_rows($rsOrderItems);
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -419,7 +419,7 @@ $totalRows_rsOrderItems = mysql_num_rows($rsOrderItems);
 				?>
                 <td align="right" valign="top">$<?php echo number_format($row_rsOrderItems['mc_gross'],2); ?></td>
               </tr>
-              <?php } while ($row_rsOrderItems = mysql_fetch_assoc($rsOrderItems)); ?>
+              <?php } while ($row_rsOrderItems = mysqli_fetch_assoc($rsOrderItems)); ?>
             </table></td>
           </tr>
           <?php
@@ -530,5 +530,5 @@ $totalRows_rsOrderItems = mysql_num_rows($rsOrderItems);
 </body>
 </html>
 <?php
-mysql_free_result($WADApaypal_refunds);
+((mysqli_free_result($WADApaypal_refunds) || (is_object($WADApaypal_refunds) && (get_class($WADApaypal_refunds) == "mysqli_result"))) ? true : false);
 ?>

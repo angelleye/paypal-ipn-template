@@ -7,7 +7,7 @@ function GetSQLValueString($theValue, $theType, $theDefinedValue = "", $theNotDe
     $theValue = get_magic_quotes_gpc() ? stripslashes($theValue) : $theValue;
   }
 
-  $theValue = function_exists("mysql_real_escape_string") ? mysql_real_escape_string($theValue) : mysql_escape_string($theValue);
+  $theValue = function_exists("mysqli_real_escape_string") ? ((isset($GLOBALS["___mysqli_ston"]) && is_object($GLOBALS["___mysqli_ston"])) ? mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $theValue) : ((trigger_error("[MySQLConverterToo] Fix the mysql_escape_string() call! This code does not work.", E_USER_ERROR)) ? "" : "")) : ((isset($GLOBALS["___mysqli_ston"]) && is_object($GLOBALS["___mysqli_ston"])) ? mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $theValue) : ((trigger_error("[MySQLConverterToo] Fix the mysql_escape_string() call! This code does not work.", E_USER_ERROR)) ? "" : ""));
 
   switch ($theType) {
     case "text":
@@ -47,21 +47,21 @@ $Paramid2_WADApaypal_orders = "-1";
 if (isset($_GET['id'])) {
   $Paramid2_WADApaypal_orders = (get_magic_quotes_gpc()) ? $_GET['id'] : addslashes($_GET['id']);
 }
-mysql_select_db($database_connDB, $connDB);
+((bool)mysqli_query( $connDB, "USE " . $database_connDB));
 $query_WADApaypal_orders = sprintf("SELECT id, receiver_email, payment_status, pending_reason, memo, payment_date, mc_gross, mc_fee, tax, mc_currency, txn_id, txn_type, first_name, last_name, address_street, address_city, address_state, address_zip, address_country, address_status, payer_email, payer_status, payment_type, notify_version, verify_sign, address_name, protection_eligibility, ipn_status, subscr_id, custom, reason_code, contact_phone, item_name, item_number, invoice, for_auction, auction_buyer_id, auction_closing_date, auction_multi_item, handling_amount, shipping_discount, insurance_amount, creation_timestamp, address_country_code, payer_business_name, btn_id, option_name1, option_selection1, option_name2, option_selection2, shipping_method, transaction_subject, receiver_id, test_ipn, mc_shipping, shipping FROM " . $db_table_prefix . "orders WHERE id = %s OR ( -1= %s AND id= %s)", GetSQLValueString($Paramid_WADApaypal_orders, "int"),GetSQLValueString($Paramid2_WADApaypal_orders, "int"),GetSQLValueString($ParamSessionid_WADApaypal_orders, "int"));
-$WADApaypal_orders = mysql_query($query_WADApaypal_orders, $connDB) or die(mysql_error());
-$row_WADApaypal_orders = mysql_fetch_assoc($WADApaypal_orders);
-$totalRows_WADApaypal_orders = mysql_num_rows($WADApaypal_orders);
+$WADApaypal_orders = mysqli_query( $connDB, $query_WADApaypal_orders) or die(((is_object($GLOBALS["___mysqli_ston"])) ? mysqli_error($GLOBALS["___mysqli_ston"]) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
+$row_WADApaypal_orders = mysqli_fetch_assoc($WADApaypal_orders);
+$totalRows_WADApaypal_orders = mysqli_num_rows($WADApaypal_orders);
 
 $varOrderID_rsOrderItems = "1";
 if (isset($row_WADApaypal_orders['id'])) {
   $varOrderID_rsOrderItems = (get_magic_quotes_gpc()) ? $row_WADApaypal_orders['id'] : addslashes($row_WADApaypal_orders['id']);
 }
-mysql_select_db($database_connDB, $connDB);
+((bool)mysqli_query( $connDB, "USE " . $database_connDB));
 $query_rsOrderItems = sprintf("SELECT * FROM " . $db_table_prefix . "order_items WHERE " . $db_table_prefix . "order_items.order_id = %s", GetSQLValueString($varOrderID_rsOrderItems, "int"));
-$rsOrderItems = mysql_query($query_rsOrderItems, $connDB) or die(mysql_error());
-$row_rsOrderItems = mysql_fetch_assoc($rsOrderItems);
-$totalRows_rsOrderItems = mysql_num_rows($rsOrderItems);
+$rsOrderItems = mysqli_query( $connDB, $query_rsOrderItems) or die(((is_object($GLOBALS["___mysqli_ston"])) ? mysqli_error($GLOBALS["___mysqli_ston"]) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
+$row_rsOrderItems = mysqli_fetch_assoc($rsOrderItems);
+$totalRows_rsOrderItems = mysqli_num_rows($rsOrderItems);
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -402,7 +402,7 @@ $totalRows_rsOrderItems = mysql_num_rows($rsOrderItems);
 				?>
                       <td align="right" valign="top">$<?php echo number_format($row_rsOrderItems['mc_gross'],2); ?></td>
                     </tr>
-                    <?php } while ($row_rsOrderItems = mysql_fetch_assoc($rsOrderItems)); ?>
+                    <?php } while ($row_rsOrderItems = mysqli_fetch_assoc($rsOrderItems)); ?>
               </table></td>
             </tr>
             <?php
@@ -597,7 +597,7 @@ $totalRows_rsOrderItems = mysql_num_rows($rsOrderItems);
 </body>
 </html>
 <?php
-mysql_free_result($WADApaypal_orders);
+((mysqli_free_result($WADApaypal_orders) || (is_object($WADApaypal_orders) && (get_class($WADApaypal_orders) == "mysqli_result"))) ? true : false);
 
-mysql_free_result($rsOrderItems);
+((mysqli_free_result($rsOrderItems) || (is_object($rsOrderItems) && (get_class($rsOrderItems) == "mysqli_result"))) ? true : false);
 ?>

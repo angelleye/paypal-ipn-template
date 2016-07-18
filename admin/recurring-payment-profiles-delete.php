@@ -8,7 +8,7 @@ function GetSQLValueString($theValue, $theType, $theDefinedValue = "", $theNotDe
     $theValue = get_magic_quotes_gpc() ? stripslashes($theValue) : $theValue;
   }
 
-  $theValue = function_exists("mysql_real_escape_string") ? mysql_real_escape_string($theValue) : mysql_escape_string($theValue);
+  $theValue = function_exists("mysqli_real_escape_string") ? ((isset($GLOBALS["___mysqli_ston"]) && is_object($GLOBALS["___mysqli_ston"])) ? mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $theValue) : ((trigger_error("[MySQLConverterToo] Fix the mysql_escape_string() call! This code does not work.", E_USER_ERROR)) ? "" : "")) : ((isset($GLOBALS["___mysqli_ston"]) && is_object($GLOBALS["___mysqli_ston"])) ? mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $theValue) : ((trigger_error("[MySQLConverterToo] Fix the mysql_escape_string() call! This code does not work.", E_USER_ERROR)) ? "" : ""));
 
   switch ($theType) {
     case "text":
@@ -37,11 +37,11 @@ $Paramid_WADApaypal_recurring_payment_profiles = "-1";
 if (isset($_GET['id'])) {
   $Paramid_WADApaypal_recurring_payment_profiles = (get_magic_quotes_gpc()) ? $_GET['id'] : addslashes($_GET['id']);
 }
-mysql_select_db($database_connDB, $connDB);
+((bool)mysqli_query( $connDB, "USE " . $database_connDB));
 $query_WADApaypal_recurring_payment_profiles = sprintf("SELECT id, payment_cycle, txn_type, last_name, first_name, next_payment_date, residence_country, initial_payment_amount, rp_invoice_id, currency_code, time_created, verify_sign, period_type, payer_status, payer_email, receiver_email, payer_id, product_type, payer_business_name, shipping, amount_per_cycle, profile_status, notify_version, amount, outstanding_balance, recurring_payment_id, product_name, ipn_status, creation_timestamp, test_ipn FROM " . $db_table_prefix . "recurring_payment_profiles WHERE id = %s", GetSQLValueString($Paramid_WADApaypal_recurring_payment_profiles, "int"));
-$WADApaypal_recurring_payment_profiles = mysql_query($query_WADApaypal_recurring_payment_profiles, $connDB) or die(mysql_error());
-$row_WADApaypal_recurring_payment_profiles = mysql_fetch_assoc($WADApaypal_recurring_payment_profiles);
-$totalRows_WADApaypal_recurring_payment_profiles = mysql_num_rows($WADApaypal_recurring_payment_profiles);?>
+$WADApaypal_recurring_payment_profiles = mysqli_query( $connDB, $query_WADApaypal_recurring_payment_profiles) or die(((is_object($GLOBALS["___mysqli_ston"])) ? mysqli_error($GLOBALS["___mysqli_ston"]) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
+$row_WADApaypal_recurring_payment_profiles = mysqli_fetch_assoc($WADApaypal_recurring_payment_profiles);
+$totalRows_WADApaypal_recurring_payment_profiles = mysqli_num_rows($WADApaypal_recurring_payment_profiles);?>
 <?php 
 // WA Application Builder Delete
 if (isset($_POST["Delete_x"])) // Trigger
@@ -59,11 +59,11 @@ if (isset($_POST["Delete_x"])) // Trigger
   $WA_columns = explode("|", $WA_columnTypesStr);
   $WA_comparisions = explode("|", $WA_comparisonStr);
   $WA_connectionDB = $database_connDB;
-  mysql_select_db($WA_connectionDB, $WA_connection);
+  ((bool)mysqli_query( $WA_connection, "USE " . $WA_connectionDB));
   if (!session_id()) session_start();
   $deleteParamsObj = WA_AB_generateWhereClause($WA_fieldNames, $WA_columns, $WA_fieldValues, $WA_comparisions);
   $WA_Sql = "DELETE FROM `" . $WA_table . "` WHERE " . $deleteParamsObj->sqlWhereClause;
-  $MM_editCmd = mysql_query($WA_Sql, $WA_connection) or die(mysql_error());
+  $MM_editCmd = mysqli_query( $WA_connection, $WA_Sql) or die(((is_object($GLOBALS["___mysqli_ston"])) ? mysqli_error($GLOBALS["___mysqli_ston"]) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
   if ($WA_redirectURL != "")  {
     if ($WA_keepQueryString && $WA_redirectURL != "" && isset($_SERVER["QUERY_STRING"]) && $_SERVER["QUERY_STRING"] !== "" && sizeof($_POST) > 0) {
       $WA_redirectURL .= ((strpos($WA_redirectURL, '?') === false)?"?":"&").$_SERVER["QUERY_STRING"];
@@ -243,5 +243,5 @@ if (isset($_POST["Delete_x"])) // Trigger
 </body>
 </html>
 <?php
-mysql_free_result($WADApaypal_recurring_payment_profiles);
+((mysqli_free_result($WADApaypal_recurring_payment_profiles) || (is_object($WADApaypal_recurring_payment_profiles) && (get_class($WADApaypal_recurring_payment_profiles) == "mysqli_result"))) ? true : false);
 ?>

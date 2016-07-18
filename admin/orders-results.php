@@ -95,7 +95,7 @@ function GetSQLValueString($theValue, $theType, $theDefinedValue = "", $theNotDe
     $theValue = get_magic_quotes_gpc() ? stripslashes($theValue) : $theValue;
   }
 
-  $theValue = function_exists("mysql_real_escape_string") ? mysql_real_escape_string($theValue) : mysql_escape_string($theValue);
+  $theValue = function_exists("mysqli_real_escape_string") ? ((isset($GLOBALS["___mysqli_ston"]) && is_object($GLOBALS["___mysqli_ston"])) ? mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $theValue) : ((trigger_error("[MySQLConverterToo] Fix the mysql_escape_string() call! This code does not work.", E_USER_ERROR)) ? "" : "")) : ((isset($GLOBALS["___mysqli_ston"]) && is_object($GLOBALS["___mysqli_ston"])) ? mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $theValue) : ((trigger_error("[MySQLConverterToo] Fix the mysql_escape_string() call! This code does not work.", E_USER_ERROR)) ? "" : ""));
 
   switch ($theType) {
     case "text":
@@ -130,18 +130,18 @@ if (isset($_GET['pageNum_WADApaypal_orders'])) {
 }
 $startRow_WADApaypal_orders = $pageNum_WADApaypal_orders * $maxRows_WADApaypal_orders;
 
-mysql_select_db($database_connDB, $connDB);
+((bool)mysqli_query( $connDB, "USE " . $database_connDB));
 $query_WADApaypal_orders = "SELECT id, receiver_email, payment_status, pending_reason, payment_date, mc_gross, mc_fee, tax, mc_currency, txn_id, txn_type, first_name, last_name, address_street, address_city, address_state, address_zip, address_country, address_status, payer_email, payer_status, payment_type, notify_version, verify_sign, address_name, protection_eligibility, ipn_status, subscr_id, custom, reason_code, contact_phone, item_name, item_number, invoice, for_auction, auction_buyer_id, auction_closing_date, auction_multi_item, creation_timestamp, address_country_code, payer_business_name, receiver_id, test_ipn FROM " . $db_table_prefix . "orders ORDER BY id DESC";
 setQueryBuilderSource($query_WADApaypal_orders,$WADbSearch1,false);
 $query_limit_WADApaypal_orders = sprintf("%s LIMIT %d, %d", $query_WADApaypal_orders, $startRow_WADApaypal_orders, $maxRows_WADApaypal_orders);
-$WADApaypal_orders = mysql_query($query_limit_WADApaypal_orders, $connDB) or die(mysql_error());
-$row_WADApaypal_orders = mysql_fetch_assoc($WADApaypal_orders);
+$WADApaypal_orders = mysqli_query( $connDB, $query_limit_WADApaypal_orders) or die(((is_object($GLOBALS["___mysqli_ston"])) ? mysqli_error($GLOBALS["___mysqli_ston"]) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
+$row_WADApaypal_orders = mysqli_fetch_assoc($WADApaypal_orders);
 
 if (isset($_GET['totalRows_WADApaypal_orders'])) {
   $totalRows_WADApaypal_orders = $_GET['totalRows_WADApaypal_orders'];
 } else {
-  $all_WADApaypal_orders = mysql_query($query_WADApaypal_orders);
-  $totalRows_WADApaypal_orders = mysql_num_rows($all_WADApaypal_orders);
+  $all_WADApaypal_orders = mysqli_query($GLOBALS["___mysqli_ston"], $query_WADApaypal_orders);
+  $totalRows_WADApaypal_orders = mysqli_num_rows($all_WADApaypal_orders);
 }
 $totalPages_WADApaypal_orders = ceil($totalRows_WADApaypal_orders/$maxRows_WADApaypal_orders)-1;
 ?>
@@ -345,7 +345,7 @@ $WARRT_AltClass1 = new WA_AltClassIterator(explode("|", "WADAResultsRowDark|"));
                 </tr>
             </table></td>
           </tr>
-          <?php } while ($row_WADApaypal_orders = mysql_fetch_assoc($WADApaypal_orders)); ?>
+          <?php } while ($row_WADApaypal_orders = mysqli_fetch_assoc($WADApaypal_orders)); ?>
         </table>
         <div class="WADAResultsNavigation">
           <div class="WADAResultsCount">Records <?php echo ($startRow_WADApaypal_orders + 1) ?> to <?php echo min($startRow_WADApaypal_orders + $maxRows_WADApaypal_orders, $totalRows_WADApaypal_orders) ?> of <?php echo $totalRows_WADApaypal_orders ?> </div>
@@ -385,5 +385,5 @@ $WARRT_AltClass1 = new WA_AltClassIterator(explode("|", "WADAResultsRowDark|"));
 </body>
 </html>
 <?php
-mysql_free_result($WADApaypal_orders);
+((mysqli_free_result($WADApaypal_orders) || (is_object($WADApaypal_orders) && (get_class($WADApaypal_orders) == "mysqli_result"))) ? true : false);
 ?>

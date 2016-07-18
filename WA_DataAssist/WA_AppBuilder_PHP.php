@@ -68,9 +68,9 @@ function WA_AB_doManageRelationalTable($WA_valuesList, $WA_appliedString, $WA_ap
   $WA_insertIDs = "";
   $WhereObj = WA_AB_generateWhereClause(array($WA_masterKeyField), array($WA_masterKeyType), array($WA_masterKeyValue), array($WA_masterKeyComp));
   $WA_Sql = "SELECT ".$WA_masterKeyField.", ".$WA_joinedKeyField." FROM ".$WA_table." WHERE ".$WhereObj->sqlWhereClause." ORDER BY ".$WA_joinedKeyField;
-  $WA_mrtJoinRS = mysql_query($WA_Sql, $WA_connection) or die(mysql_error());
-  if (mysql_num_rows($WA_mrtJoinRS) > 0) {
-    while ($row_WA_mrtJoinRS = mysql_fetch_assoc($WA_mrtJoinRS)) {
+  $WA_mrtJoinRS = mysqli_query( $WA_connection, $WA_Sql) or die(((is_object($GLOBALS["___mysqli_ston"])) ? mysqli_error($GLOBALS["___mysqli_ston"]) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
+  if (mysqli_num_rows($WA_mrtJoinRS) > 0) {
+    while ($row_WA_mrtJoinRS = mysqli_fetch_assoc($WA_mrtJoinRS)) {
       $WA_formerString .= "^" . $row_WA_mrtJoinRS[$WA_joinedKeyField] . "^";
       $WA_formerList[] = $row_WA_mrtJoinRS[$WA_joinedKeyField];
     }
@@ -79,7 +79,7 @@ function WA_AB_doManageRelationalTable($WA_valuesList, $WA_appliedString, $WA_ap
     if (strpos($WA_appliedString, "^" . $WA_formerList[$n] . "^") === false) {
       $deleteParamsObj = WA_AB_generateWhereClause(array($WA_masterKeyField, $WA_joinedKeyField), array($WA_masterKeyType, $WA_joinedKeyType), array($WA_masterKeyValue, $WA_formerList[$n]), array($WA_masterKeyComp, $WA_joinedKeyComp));
       $WA_Sql = "DELETE FROM `" . $WA_table . "` WHERE " . $deleteParamsObj->sqlWhereClause;
-      $MM_editCmd = mysql_query($WA_Sql, $WA_connection) or die(mysql_error());
+      $MM_editCmd = mysqli_query( $WA_connection, $WA_Sql) or die(((is_object($GLOBALS["___mysqli_ston"])) ? mysqli_error($GLOBALS["___mysqli_ston"]) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
     }
   }
   for ($n=0; $n<sizeof($WA_appliedList); $n++) {
@@ -94,13 +94,13 @@ function WA_AB_doManageRelationalTable($WA_valuesList, $WA_appliedString, $WA_ap
         $updateParamsObj = WA_AB_generateInsertParams($WA_fieldNames, $WA_columns, $WA_fieldValues, -1);
         $WhereObj = WA_AB_generateWhereClause(array($WA_masterKeyField, $WA_joinedKeyField), array($WA_masterKeyType, $WA_joinedKeyType), array($WA_masterKeyValue, $WA_valuesList[$n][0]), array($WA_masterKeyComp, $WA_joinedKeyComp));
         $WA_Sql = "UPDATE `" . $WA_table . "` SET " . $updateParamsObj->WA_setValues . " WHERE " . $WhereObj->sqlWhereClause . "";
-        $MM_editCmd = mysql_query($WA_Sql, $WA_connection) or die(mysql_error());
+        $MM_editCmd = mysqli_query( $WA_connection, $WA_Sql) or die(((is_object($GLOBALS["___mysqli_ston"])) ? mysqli_error($GLOBALS["___mysqli_ston"]) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
       }
     }
     else {
       $insertParamsObj = WA_AB_generateInsertParams($WA_fieldNames, $WA_columns, $WA_fieldValues, -1);
       $WA_Sql = "INSERT INTO `" . $WA_table . "` (" . $insertParamsObj->WA_tableValues . ") VALUES (" . $insertParamsObj->WA_dbValues . ")";
-      $MM_editCmd = mysql_query($WA_Sql, $WA_connection) or die(mysql_error());
+      $MM_editCmd = mysqli_query( $WA_connection, $WA_Sql) or die(((is_object($GLOBALS["___mysqli_ston"])) ? mysqli_error($GLOBALS["___mysqli_ston"]) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
     }
   }
 }

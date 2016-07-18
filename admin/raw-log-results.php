@@ -57,7 +57,7 @@ function GetSQLValueString($theValue, $theType, $theDefinedValue = "", $theNotDe
     $theValue = get_magic_quotes_gpc() ? stripslashes($theValue) : $theValue;
   }
 
-  $theValue = function_exists("mysql_real_escape_string") ? mysql_real_escape_string($theValue) : mysql_escape_string($theValue);
+  $theValue = function_exists("mysqli_real_escape_string") ? ((isset($GLOBALS["___mysqli_ston"]) && is_object($GLOBALS["___mysqli_ston"])) ? mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $theValue) : ((trigger_error("[MySQLConverterToo] Fix the mysql_escape_string() call! This code does not work.", E_USER_ERROR)) ? "" : "")) : ((isset($GLOBALS["___mysqli_ston"]) && is_object($GLOBALS["___mysqli_ston"])) ? mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $theValue) : ((trigger_error("[MySQLConverterToo] Fix the mysql_escape_string() call! This code does not work.", E_USER_ERROR)) ? "" : ""));
 
   switch ($theType) {
     case "text":
@@ -92,18 +92,18 @@ if (isset($_GET['pageNum_WADApaypal_raw_log'])) {
 }
 $startRow_WADApaypal_raw_log = $pageNum_WADApaypal_raw_log * $maxRows_WADApaypal_raw_log;
 
-mysql_select_db($database_connDB, $connDB);
+((bool)mysqli_query( $connDB, "USE " . $database_connDB));
 $query_WADApaypal_raw_log = "SELECT id, created_timestamp, ipn_data_serialized FROM " . $db_table_prefix . "raw_log ORDER BY id DESC";
 setQueryBuilderSource($query_WADApaypal_raw_log,$WADbSearch1,false);
 $query_limit_WADApaypal_raw_log = sprintf("%s LIMIT %d, %d", $query_WADApaypal_raw_log, $startRow_WADApaypal_raw_log, $maxRows_WADApaypal_raw_log);
-$WADApaypal_raw_log = mysql_query($query_limit_WADApaypal_raw_log, $connDB) or die(mysql_error());
-$row_WADApaypal_raw_log = mysql_fetch_assoc($WADApaypal_raw_log);
+$WADApaypal_raw_log = mysqli_query( $connDB, $query_limit_WADApaypal_raw_log) or die(((is_object($GLOBALS["___mysqli_ston"])) ? mysqli_error($GLOBALS["___mysqli_ston"]) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false)));
+$row_WADApaypal_raw_log = mysqli_fetch_assoc($WADApaypal_raw_log);
 
 if (isset($_GET['totalRows_WADApaypal_raw_log'])) {
   $totalRows_WADApaypal_raw_log = $_GET['totalRows_WADApaypal_raw_log'];
 } else {
-  $all_WADApaypal_raw_log = mysql_query($query_WADApaypal_raw_log);
-  $totalRows_WADApaypal_raw_log = mysql_num_rows($all_WADApaypal_raw_log);
+  $all_WADApaypal_raw_log = mysqli_query($GLOBALS["___mysqli_ston"], $query_WADApaypal_raw_log);
+  $totalRows_WADApaypal_raw_log = mysqli_num_rows($all_WADApaypal_raw_log);
 }
 $totalPages_WADApaypal_raw_log = ceil($totalRows_WADApaypal_raw_log/$maxRows_WADApaypal_raw_log)-1;
 ?>
@@ -290,7 +290,7 @@ $WARRT_AltClass1 = new WA_AltClassIterator(explode("|", "WADAResultsRowDark|"));
               </tr>
             </table></td>
           </tr>
-          <?php } while ($row_WADApaypal_raw_log = mysql_fetch_assoc($WADApaypal_raw_log)); ?>
+          <?php } while ($row_WADApaypal_raw_log = mysqli_fetch_assoc($WADApaypal_raw_log)); ?>
         </table>
         <div class="WADAResultsNavigation">
           <div class="WADAResultsCount">Records <?php echo ($startRow_WADApaypal_raw_log + 1) ?> to <?php echo min($startRow_WADApaypal_raw_log + $maxRows_WADApaypal_raw_log, $totalRows_WADApaypal_raw_log) ?> of <?php echo $totalRows_WADApaypal_raw_log ?> </div>
@@ -330,5 +330,5 @@ $WARRT_AltClass1 = new WA_AltClassIterator(explode("|", "WADAResultsRowDark|"));
 </body>
 </html>
 <?php
-mysql_free_result($WADApaypal_raw_log);
+((mysqli_free_result($WADApaypal_raw_log) || (is_object($WADApaypal_raw_log) && (get_class($WADApaypal_raw_log) == "mysqli_result"))) ? true : false);
 ?>

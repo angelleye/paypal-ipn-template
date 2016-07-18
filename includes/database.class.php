@@ -73,13 +73,13 @@ function Database($server, $user, $pass, $database, $pre=''){
 #-#############################################
 # desc: connect and select database using vars above
 function connect() {
-    $this->link_id=@mysql_connect($this->server,$this->user,$this->pass);
+    $this->link_id=@($GLOBALS["___mysqli_ston"] = mysqli_connect($this->server, $this->user, $this->pass));
 
     if (!$this->link_id) {//open failed
         $this->oops("Could not connect to server: <b>$this->server</b>.");
         }
 
-    if(!@mysql_select_db($this->database, $this->link_id)) {//no database
+    if(!@((bool)mysqli_query( $this->link_id, "USE " . $this->database))) {//no database
         $this->oops("Could not open database: <b>$this->database</b>.");
         }
 
@@ -94,7 +94,7 @@ function connect() {
 #-#############################################
 # desc: close the connection
 function close() {
-    if(!mysql_close()){
+    if(!((is_null($___mysqli_res = mysqli_close($GLOBALS["___mysqli_ston"]))) ? false : $___mysqli_res)){
         $this->oops("Connection close failed.");
     }
 }#-#close()
@@ -106,7 +106,7 @@ function close() {
 # returns: string
 function escape($string) {
     if(get_magic_quotes_gpc()) $string = stripslashes($string);
-    return mysql_real_escape_string($string);
+    return ((isset($GLOBALS["___mysqli_ston"]) && is_object($GLOBALS["___mysqli_ston"])) ? mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $string) : ((trigger_error("[MySQLConverterToo] Fix the mysql_escape_string() call! This code does not work.", E_USER_ERROR)) ? "" : ""));
 }#-#escape()
 
 
@@ -116,13 +116,13 @@ function escape($string) {
 # returns: (query_id) for fetching results etc
 function query($sql) {
     // do query
-    $this->query_id = @mysql_query($sql, $this->link_id);
+    $this->query_id = @mysqli_query( $this->link_id, $sql);
 
     if (!$this->query_id) {
         $this->oops("<b>MySQL Query fail:</b> $sql");
     }
     
-    $this->affected_rows = @mysql_affected_rows();
+    $this->affected_rows = @mysqli_affected_rows($GLOBALS["___mysqli_ston"]);
 
     return $this->query_id;
 }#-#query()
@@ -139,7 +139,7 @@ function fetch_array($query_id=-1) {
     }
 
     if (isset($this->query_id)) {
-        $this->record = @mysql_fetch_assoc($this->query_id);
+        $this->record = @mysqli_fetch_assoc($this->query_id);
     }else{
         $this->oops("Invalid query_id: <b>$this->query_id</b>. Records could not be fetched.");
     }
@@ -179,7 +179,7 @@ function free_result($query_id=-1) {
     if ($query_id!=-1) {
         $this->query_id=$query_id;
     }
-    if(!@mysql_free_result($this->query_id)) {
+    if(!@((mysqli_free_result($this->query_id) || (is_object($this->query_id) && (get_class($this->query_id) == "mysqli_result"))) ? true : false)) {
        // $this->oops("Result ID: <b>$this->query_id</b> could not be freed.");
     }
 }#-#free_result()
@@ -235,7 +235,7 @@ function query_insert($table, $data) {
 
     if($this->query($q)){
         $this->free_result();
-        return mysql_insert_id();
+        return ((is_null($___mysqli_res = mysqli_insert_id($GLOBALS["___mysqli_ston"]))) ? false : $___mysqli_res);
     }
     else return false;
 
@@ -247,12 +247,12 @@ function query_insert($table, $data) {
 # param: [optional] any custom error to display
 function oops($msg='') {
     if($this->link_id>0){
-        $this->error=mysql_error($this->link_id);
-        $this->errno=mysql_errno($this->link_id);
+        $this->error=((is_object($this->link_id)) ? mysqli_error($this->link_id) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false));
+        $this->errno=((is_object($this->link_id)) ? mysqli_errno($this->link_id) : (($___mysqli_res = mysqli_connect_errno()) ? $___mysqli_res : false));
     }
     else{
-        $this->error=mysql_error();
-        $this->errno=mysql_errno();
+        $this->error=((is_object($GLOBALS["___mysqli_ston"])) ? mysqli_error($GLOBALS["___mysqli_ston"]) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false));
+        $this->errno=((is_object($GLOBALS["___mysqli_ston"])) ? mysqli_errno($GLOBALS["___mysqli_ston"]) : (($___mysqli_res = mysqli_connect_errno()) ? $___mysqli_res : false));
     }
     
         $email_body = '<table align="center" border="1" cellspacing="0" style="background:white;color:black;width:80%;">
