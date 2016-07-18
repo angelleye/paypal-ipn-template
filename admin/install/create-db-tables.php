@@ -303,6 +303,7 @@ $sql = "CREATE TABLE IF NOT EXISTS `" . $db_table_prefix . "recurring_payments` 
 		  `creation_timestamp` timestamp NULL default CURRENT_TIMESTAMP,
 		  `recurring_payment_id` varchar(50) collate utf8_bin default NULL,
 		  `test_ipn` tinyint(1) default '0',
+		  `payer_email` varchar(127) collate utf8_bin default NULL,
 		  PRIMARY KEY  (`id`)
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin AUTO_INCREMENT=1";
 
