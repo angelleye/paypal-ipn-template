@@ -7,7 +7,7 @@ if(!$curl_validation)
 	if($ssl)   
 	{   
 	 $header = '';   
-	 $header .= "POST /cgi-bin/webscr HTTP/1.0\r\n";   
+	 $header .= "POST /cgi-bin/webscr HTTP/1.1\r\n";
 	 $header .= "Host: " . $ppHost . ":443\r\n";   
 	 $header .= "Content-Type: application/x-www-form-urlencoded\r\n";   
 	 $header .= "Content-Length: " . strlen($req) . "\r\n\r\n";   
@@ -16,7 +16,7 @@ if(!$curl_validation)
 	else  
 	{   
 	 $header = '';   
-	 $header .= "POST /cgi-bin/webscr HTTP/1.0\r\n";   
+	 $header .= "POST /cgi-bin/webscr HTTP/1.1\r\n";
 	 $header .= "Host: " . $ppHost . ":80\r\n";   
 	 $header .= "Content-Type: application/x-www-form-urlencoded\r\n";   
 	 $header .= "Content-Length: " . strlen($req) . "\r\n\r\n";   
@@ -64,4 +64,3 @@ else
 	else
 		$valid = false;
 }
-?>
