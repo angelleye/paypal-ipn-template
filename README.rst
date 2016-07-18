@@ -10,7 +10,7 @@ This is NOT an object-oriented class library.  This is a rudimentary, but fully 
 Server Requirements
 *******************
 
--  PHP version 4.0+
+-  PHP version 5.6+
 
 ************
 Installation
