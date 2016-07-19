@@ -1,0 +1,7 @@
+{
+  "require": {
+    "angelleye/paypal-php-library": "2.0.*",
+    "mike182uk/paypal-ipn-listener": "^6.0",
+    "twbs/bootstrap": "^3.3"
+  }
+}
