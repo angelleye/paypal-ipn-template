@@ -18,7 +18,6 @@ else
 }
 
 require_once('includes/database.class.php');
-require_once('includes/functions.php');
 
 // Configure SMTP email settings
 $mail = new PHPMailer();
