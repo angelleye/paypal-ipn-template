@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="c658fe8d-46b6-46a3-abe4-c9c9b08c15d5" name="fmipn.angelleye.com" url="http://fmipn.angelleye.com">
+        <fileTransfer host="fmipn.angelleye.com" port="21" rootFolder="/fmipn" password="dffbdf8bdfdcdfc4df9edff8df8bdfc8dfe2df93dfdcdf8b" username="angelley">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" />
+          </advancedOptions>
+          <option name="port" value="21" />
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>
