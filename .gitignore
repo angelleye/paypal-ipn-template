@@ -4,6 +4,7 @@ admin/config.php
 # Ignore PHPStorm & IDE-specific files
 .idea/
 *.iml
+temp
 
 # Ignore composer dependencies
 /vendor/
