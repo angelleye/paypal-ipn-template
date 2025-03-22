@@ -61,7 +61,7 @@ var $query_id = 0;
 
 #-#############################################
 # desc: constructor
-function Database($server, $user, $pass, $database, $pre=''){
+function __construct($server, $user, $pass, $database, $pre=''){
     $this->server=$server;
     $this->user=$user;
     $this->pass=$pass;
