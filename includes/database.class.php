@@ -104,10 +104,15 @@ function close() {
 # Desc: escapes characters to be mysql ready
 # Param: string
 # returns: string
-function escape($string) {
-    if(get_magic_quotes_gpc()) $string = stripslashes($string);
-    return ((isset($GLOBALS["___mysqli_ston"]) && is_object($GLOBALS["___mysqli_ston"])) ? mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $string) : ((trigger_error("[MySQLConverterToo] Fix the mysql_escape_string() call! This code does not work.", E_USER_ERROR)) ? "" : ""));
-}#-#escape()
+    function escape($string) {
+        // No need to check for get_magic_quotes_gpc, as it's deprecated/removed.
+        if (is_object($GLOBALS["___mysqli_ston"])) {
+            return mysqli_real_escape_string($GLOBALS["___mysqli_ston"], $string);
+        } else {
+            trigger_error("[MySQLConverterToo] mysqli_real_escape_string() call failed.", E_USER_ERROR);
+            return "";
+        }
+    }#-#escape()
 
 
 #-#############################################
@@ -175,14 +180,13 @@ function fetch_all_array($sql) {
 #-#############################################
 # desc: frees the resultset
 # param: query_id for mysql run. if none specified, last used
-function free_result($query_id=-1) {
-    if ($query_id!=-1) {
-        $this->query_id=$query_id;
-    }
-    if(!@((mysqli_free_result($this->query_id) || (is_object($this->query_id) && (get_class($this->query_id) == "mysqli_result"))) ? true : false)) {
-       // $this->oops("Result ID: <b>$this->query_id</b> could not be freed.");
-    }
-}#-#free_result()
+    function free_result() {
+        // Ensure $this->query_id is a valid mysqli_result object before freeing the result
+        if ($this->query_id instanceof mysqli_result) {
+            mysqli_free_result($this->query_id);
+        }
+        $this->query_id = null; // Reset the query_id property
+    }#-#free_result()
 
 
 #-#############################################
