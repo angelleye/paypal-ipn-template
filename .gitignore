@@ -1,3 +1,53 @@
-.idea
+# Config File
 admin/config.php
-vendor/
+
+# Ignore PHPStorm & IDE-specific files
+.idea/
+*.iml
+
+# Ignore composer dependencies
+/vendor/
+
+# Environment configuration files
+.env
+.env.*.local
+app/config/parameters.yml
+app/config/parameters.php
+
+# Avoid sensitive files (if they are present)
+admin/config.php
+
+# Node dependencies (if Node.js is used alongside PHP)
+node_modules/
+
+# Ignore any build artifacts (e.g., for CI/CD or deployment)
+build/
+dist/
+
+# Ignore PHPUnit results
+.phpunit.result.cache
+
+# Ignore temporary and cached files
+*.log
+*.cache
+*.tmp
+*.swp
+*.swo
+__MACOSX/
+.DS_Store
+
+# Ignore uploaded or stored user data
+public/uploads/
+storage/uploads/
+
+# Ignore composer lock cache
+composer.lock
+
+# Ignore dependency/module-specific artifacts
+*.phar
+phpunit.xml
+phpunit.xml.dist
+
+# Ignore Docker-specific files (if Docker is used)
+docker-compose.yml
+*.dockerfile
